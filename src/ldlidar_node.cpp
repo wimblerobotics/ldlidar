@@ -4,7 +4,7 @@ LD06::LD06()
   : Node("ld06_node")
 {
   topic_name_ = this->declare_parameter("topic_name", "scan");
-  port_name_ = this->declare_parameter("port_name", "/dev/ttyACM0");
+  port_name_ = this->declare_parameter("port_name", "/dev/ttyACM0"); //TODO: Figure out what's the real port name
   lidar_frame_ = this->declare_parameter("lidar_frame", "laser");
   
   lidar_ = new LiPkg;
