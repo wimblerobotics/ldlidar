@@ -4,8 +4,8 @@ LD06::LD06()
   : Node("ld06_node")
 {
   topic_name_ = this->declare_parameter("topic_name", "scan");
-  port_name_ = this->declare_parameter("port_name_", "/dev/ttyACM0");
-  lidar_frame_ = this->declare_parameter("lidar_frame_", "laser");
+  port_name_ = this->declare_parameter("port_name", "/dev/ttyACM0");
+  lidar_frame_ = this->declare_parameter("lidar_frame", "laser");
   
   lidar_ = new LiPkg;
   lidar_pub_ = this->create_publisher<sensor_msgs::msg::LaserScan>(topic_name_, 10);
