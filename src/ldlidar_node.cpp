@@ -67,9 +67,9 @@ LD06::LD06()
 
 void LD06::publishLoop()
 {
-	if (lidar_->IsFrameReady())
-	{
+  if (lidar_->IsFrameReady())
+  {
     lidar_pub_->publish(lidar_->GetLaserScan());
     lidar_->ResetFrameReady();
-	}
+  }
 }
