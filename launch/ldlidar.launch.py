@@ -32,7 +32,7 @@ def generate_launch_description():
             package='ldlidar',
             executable='ldlidar',
             name='ldlidar',
-            output='screen'
+            output='screen',
             parameters=[
                 {'serial_port': LaunchConfiguration("serial_port")},
                 {'topic_name': LaunchConfiguration("topic_name")},
