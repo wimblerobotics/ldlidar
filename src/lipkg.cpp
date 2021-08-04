@@ -12,7 +12,6 @@
 #include <algorithm>
 #include "tofbf.h"
 
- 
 static const uint8_t CrcTable[256] =
 {
 	0x00, 0x4d, 0x9a, 0xd7, 0x79, 0x34, 0xe3,
@@ -47,6 +46,8 @@ LiPkg::LiPkg():
 	mFrameReady(false),
 	mIsPkgReady(false)
 {
+    clock = std::make_shared<rclcpp::Clock>(RCL_ROS_TIME);
+    timesource.attachClock(clock);
 }
 
 double LiPkg::GetSpeed(void)
@@ -225,7 +226,7 @@ void LiPkg::ToLaserscan(std::vector<PointData> src)
   angle_increment = ANGLE_TO_RADIAN(mSpeed/4500);
   /*Calculate the number of scanning points*/
   unsigned int beam_size = ceil((angle_max - angle_min) / angle_increment);
-  output.header.stamp = ros::Time::now();
+  output.header.stamp = clock->now();
   output.header.frame_id = mLidarFrame;
   output.angle_min = angle_min;
   output.angle_max = angle_max;

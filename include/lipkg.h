@@ -14,7 +14,11 @@
 #include <vector>
 #include <array>
 #include <iostream>
-#include <sensor_msgs/LaserScan.h>
+// #include <sensor_msgs/LaserScan.h>
+#include "sensor_msgs/msg/laser_scan.hpp"
+#include <rclcpp/time.hpp>
+#include <rclcpp/time_source.hpp>
+#include <rclcpp/clock.hpp>
 
 #define ANGLE_TO_RADIAN(angle) ((angle)*3141.59/180000)
 
@@ -81,7 +85,7 @@ public:
 	const std::array<PointData, POINT_PER_PACK>& GetPkgData(void);/*original data package*/
 	bool Parse(const uint8_t* data , long len);/*parse single packet*/
 	bool AssemblePacket();/*combine stantard data into data frames and calibrate*/
-	sensor_msgs::LaserScan GetLaserScan() {return output;}
+	sensor_msgs::msg::LaserScan GetLaserScan() {return output;}
 	void SetLidarFrame(const std::string lidar_frame) { mLidarFrame = lidar_frame;};
 private:
 	uint16_t mTimestamp;
@@ -92,9 +96,11 @@ private:
 	std::vector<PointData> mFrameTmp;
 	bool mIsPkgReady;
 	bool mFrameReady;
-	sensor_msgs::LaserScan output;
+	sensor_msgs::msg::LaserScan output;
 	std::string mLidarFrame;
 	void ToLaserscan(std::vector<PointData> src);
+	rclcpp::Clock::SharedPtr clock;
+    rclcpp::TimeSource timesource;
 };
 #endif
 /********************* (C) COPYRIGHT LD Robot *******END OF FILE ********/
