@@ -14,7 +14,7 @@ def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument(
             name='serial_port', 
-            default_value='/dev/ttyACM0', #TODO: Figure out what's the real port name
+            default_value='',
             description='LD06 Serial Port'
         ),
         DeclareLaunchArgument(
