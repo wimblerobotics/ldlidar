@@ -3,24 +3,19 @@
 LD06::LD06()
   : Node("ld06_node")
 {
-  topic_name_ = this->declare_parameter("topic_name", "scan");
-  port_name_ = this->declare_parameter("port_name", "/dev/ttyACM0"); //TODO: Figure out what's the real port name
-  lidar_frame_ = this->declare_parameter("lidar_frame", "laser");
+  std::string topic_name = this->declare_parameter("topic_name", "scan");
+  std::string port_name = this->declare_parameter("serial_port", ""); //TODO: Figure out what's the real port name
+  std::string lidar_frame = this->declare_parameter("lidar_frame", "laser");
   
   lidar_ = new LiPkg;
-  lidar_pub_ = this->create_publisher<sensor_msgs::msg::LaserScan>(topic_name_, 10);
+  lidar_pub_ = this->create_publisher<sensor_msgs::msg::LaserScan>(topic_name, 10);
 
-  CmdInterfaceLinux cmd_port;
-  std::string port_name_;
-  std::string lidar_frame_;
-
-  lidar_->SetLidarFrame(lidar_frame_);
-
-  if (port_name_.empty())
+  lidar_->SetLidarFrame(lidar_frame);
+  if (port_name.empty())
   {
     RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Autodetecting serial port");
     std::vector<std::pair<std::string, std::string>> device_list;
-    cmd_port.GetCmdDevices(device_list);
+    cmd_port_.GetCmdDevices(device_list);
     auto found = std::find_if(
       device_list.begin(),
       device_list.end(),
@@ -30,7 +25,8 @@ LD06::LD06()
 
     if (found != device_list.end())
     {
-      port_name_ = found->first;
+      RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "%s %s", found->first.c_str(), found->second.c_str());
+      port_name = found->first;
     }
     else
     {
@@ -38,19 +34,16 @@ LD06::LD06()
     }
   }
 
-  RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Using port %s", port_name_);
+  RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Using port %s", port_name.c_str());
 
-  cmd_port.SetReadCallback(
-    [this](const char *byte, size_t len) 
-    {
-      if(lidar_->Parse((uint8_t*)byte, len))
-      {
-        lidar_->AssemblePacket();
-      }
-    }
-  );
+	cmd_port_.SetReadCallback([this](const char *byte, size_t len) {
+		if(lidar_->Parse((uint8_t*)byte, len))
+		{
+			lidar_->AssemblePacket();
+		}
+	});
 
-  if(cmd_port.Open(port_name_))
+  if(cmd_port_.Open(port_name))
   {
     RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "LiDAR_LD06 started successfully");
   } 
@@ -60,7 +53,7 @@ LD06::LD06()
   }
 
   loop_timer_ = this->create_wall_timer(
-    1ms, 
+    100ms, 
     std::bind(&LD06::publishLoop, this)
   );
 }

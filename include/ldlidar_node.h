@@ -18,11 +18,9 @@ class LD06 : public rclcpp::Node
     LD06();
 
   private:
-    std::string topic_name_;
-    std::string lidar_frame_;
-    std::string port_name_;
+    CmdInterfaceLinux cmd_port_;
     rclcpp::TimerBase::SharedPtr loop_timer_;
-    LiPkg * lidar_ = nullptr;
+    LiPkg * lidar_;
     rclcpp::Publisher<sensor_msgs::msg::LaserScan>::SharedPtr lidar_pub_;
     void publishLoop();
 };
