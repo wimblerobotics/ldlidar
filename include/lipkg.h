@@ -94,8 +94,8 @@ private:
 	long mErrorTimes;
 	std::array<PointData, POINT_PER_PACK>mOnePkg;
 	std::vector<PointData> mFrameTmp;
-	bool mIsPkgReady;
 	bool mFrameReady;
+	bool mIsPkgReady;
 	sensor_msgs::msg::LaserScan output;
 	std::string mLidarFrame;
 	void ToLaserscan(std::vector<PointData> src);
