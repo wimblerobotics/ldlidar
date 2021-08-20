@@ -44,7 +44,8 @@ LiPkg::LiPkg():
 	mSpeed(0),
 	mErrorTimes(0),
 	mFrameReady(false),
-	mIsPkgReady(false)
+	mIsPkgReady(false),
+	beam_size_(0)
 {
     clock = std::make_shared<rclcpp::Clock>(RCL_ROS_TIME);
     timesource.attachClock(clock);
@@ -223,44 +224,40 @@ void LiPkg::ToLaserscan(std::vector<PointData> src)
   range_min = 0.005;
   range_max = 15.0;
   /*Angle resolution, the smaller the resolution, the smaller the error after conversion*/
-  angle_increment = ANGLE_TO_RADIAN(mSpeed/4500);
   /*Calculate the number of scanning points*/
-  unsigned int beam_size = ceil((angle_max - angle_min) / angle_increment);
+  
+  angle_increment = ANGLE_TO_RADIAN(mSpeed/4500.0);
+  if(beam_size_ == 0)
+  {
+    beam_size_ = ceil((angle_max - angle_min) / angle_increment);
+    output.ranges.resize(beam_size_);
+    output.intensities.resize(beam_size_);
+    output.angle_increment = angle_increment;
+  }
+
   output.header.stamp = clock->now();
   output.header.frame_id = mLidarFrame;
   output.angle_min = angle_min;
   output.angle_max = angle_max;
   output.range_min = range_min;
   output.range_max = range_max;
-  output.angle_increment = angle_increment;
   output.time_increment = 0.0;
   output.scan_time = 0.0;
   
   /*First fill all the data with Nan*/
-  output.ranges.assign(beam_size, std::numeric_limits<float>::quiet_NaN());
-  output.intensities.assign(beam_size, std::numeric_limits<float>::quiet_NaN());
+  output.ranges.assign(beam_size_, std::numeric_limits<float>::infinity());
+  output.intensities.assign(beam_size_, std::numeric_limits<float>::infinity());
 
   for (auto point : src)
   {
-	float range = point.distance ;
+    float range = point.distance ;
     float angle = ANGLE_TO_RADIAN(point.angle);
 
     int index = (int)((output.angle_max - angle) / output.angle_increment);
     // int index = (int)((angle - output.angle_min) / output.angle_increment); //default, but this is inverted
-    if (index >= 0 && index < beam_size)
+    if (index >= 0 && index < beam_size_)
     {
-      /*If the current content is Nan, it is assigned directly*/
-      if (std::isnan(output.ranges[index]))
-      {
-        output.ranges[index] = range;
-      }   
-      else
-      {/*Otherwise, only when the distance is less than the current value, it can be re assigned*/
-        if (range < output.ranges[index])
-        {
-          output.ranges[index] = range;
-        }
-      }
+      output.ranges[index] = range;
       output.intensities[index] = point.confidence;
     }
   }

@@ -20,7 +20,7 @@
 #include <rclcpp/time_source.hpp>
 #include <rclcpp/clock.hpp>
 
-#define ANGLE_TO_RADIAN(angle) ((angle)*3141.59/180000)
+#define ANGLE_TO_RADIAN(angle) ((angle)*3141.59/180000.0)
 
 enum
 {
@@ -101,6 +101,7 @@ private:
 	void ToLaserscan(std::vector<PointData> src);
 	rclcpp::Clock::SharedPtr clock;
     rclcpp::TimeSource timesource;
+	unsigned int beam_size_;
 };
 #endif
 /********************* (C) COPYRIGHT LD Robot *******END OF FILE ********/
