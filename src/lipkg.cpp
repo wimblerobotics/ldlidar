@@ -257,8 +257,17 @@ void LiPkg::ToLaserscan(std::vector<PointData> src)
     // int index = (int)((angle - output.angle_min) / output.angle_increment); //default, but this is inverted
     if (index >= 0 && index < beam_size_)
     {
-      output.ranges[index] = range;
-      output.intensities[index] = point.confidence;
+		if(range < range_threshold_)
+		{
+			output.ranges[index] = std::numeric_limits<float>::quiet_NaN();
+			output.intensities[index] = point.confidence;
+		}
+		else
+		{
+			output.ranges[index] = range;
+			output.intensities[index] = point.confidence;
+		}
+      
     }
   }
 }

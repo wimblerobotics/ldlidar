@@ -19,9 +19,13 @@ def generate_launch_description():
         DeclareLaunchArgument(
             name='lidar_frame', 
             default_value='laser',
-            description='LD06 Topic Name'
+            description='Lidar Frame ID'
         ),
-
+        DeclareLaunchArgument(
+            name='range_threshold', 
+            default_value='0.005',
+            description='Range Threshold'
+        ),
         Node(
             package='ldlidar',
             executable='ldlidar',
@@ -30,7 +34,8 @@ def generate_launch_description():
             parameters=[
                 {'serial_port': LaunchConfiguration("serial_port")},
                 {'topic_name': LaunchConfiguration("topic_name")},
-                {'lidar_frame': LaunchConfiguration("lidar_frame")}
+                {'lidar_frame': LaunchConfiguration("lidar_frame")},
+                {'range_threshold': LaunchConfiguration("range_threshold")}
             ]
         )
     ])
