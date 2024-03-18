@@ -6,7 +6,7 @@ LD06::LD06()
   std::string topic_name = this->declare_parameter("topic_name", "scan");
   std::string port_name = this->declare_parameter("serial_port", ""); //TODO: Figure out what's the real port name
   std::string lidar_frame = this->declare_parameter("lidar_frame", "laser");
-  float range_threshold = this->declare_parameter("range_threshold", 0.005);
+  float range_threshold = this->declare_parameter("range_threshold", 0.2);
 
   lidar_ = new LiPkg;
   lidar_pub_ = this->create_publisher<sensor_msgs::msg::LaserScan>(topic_name, 10);
